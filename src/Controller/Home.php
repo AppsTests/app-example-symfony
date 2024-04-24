@@ -11,6 +11,6 @@ class Home extends AbstractController
     #[Route('/')]
     public function index(): Response
     {
-        return new Response('Timeweb.Cloud + Symfony = ❤️');
+        return new Response('Timeweb Cloud + Symfony = ❤️');
     }
 }
