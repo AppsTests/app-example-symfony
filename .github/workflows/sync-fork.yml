@@ -11,19 +11,25 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0  # полная история для корректного rebase
 
-      - name: Set up Git and add upstream
+      - name: Set up Git and fetch upstream
         run: |
           git remote add upstream https://github.com/timeweb-cloud/app-example-symfony.git
           git fetch upstream
 
-      - name: Merge upstream changes into main
+      - name: Rebase main onto upstream/main
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git checkout main
-          git merge upstream/main --no-edit || echo "No changes to merge"
+          git rebase upstream/main || {
+            echo "Rebase failed — likely due to conflicts. Resolve manually."
+            exit 1
+          }
 
-      - name: Push changes to fork
+      - name: Force-push updated main
         run: |
-          git push origin main
+          git push --force-with-lease origin main
